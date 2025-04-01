@@ -1,0 +1,51 @@
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Conectar a MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => console.log('📡 Conectado a MongoDB'))
+  .catch(err => console.log(err));
+
+// Modelos de MongoDB
+const EmpresaSchema = new mongoose.Schema({
+    nombre: String,
+    simbolo: String,
+    precio: Number,
+    variacion: Number,
+    sector: String
+});
+const Empresa = mongoose.model('Empresa', EmpresaSchema);
+
+const CriptoSchema = new mongoose.Schema({
+    nombre: String,
+    simbolo: String,
+    precio: Number,
+    variacion: Number,
+    marketCap: Number
+});
+const Cripto = mongoose.model('Cripto', CriptoSchema);
+
+// Endpoints API
+app.get('/empresas', async (req, res) => {
+    const empresas = await Empresa.find();
+    res.json(empresas);
+});
+
+app.get('/criptomonedas', async (req, res) => {
+    const criptos = await Cripto.find();
+    res.json(criptos);
+});
+
+app.listen(5000, () => {
+    console.log('🚀 Servidor corriendo en http://localhost:5000');
+});
